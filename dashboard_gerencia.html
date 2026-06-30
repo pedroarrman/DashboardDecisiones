@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <title>Dashboard de Gerencia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com"
+      crossorigin="">
+    <link
+href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+      rel="stylesheet">
+    <style>
+    :root {
+      --bg-app: #f3f5f8;
+      --bg-soft: #f8fafc;
+      --surface: rgba(255,255,255,.9);
+      --surface-solid: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --border: #e2e8f0;
+      --border-soft: #edf2f7;
+      --primary: #0f172a;
+      --primary-hover: #1e293b;
+      --accent: #2563eb;
+      --success: #059669;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --radius: 14px;
+      --radius-lg: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { overflow-x: hidden; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top left, rgba(37,99,235,.06), transparent 26%), linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page { max-width: 1580px; margin: 0 auto; padding: 28px 20px 40px; }
+    .hero { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; margin-bottom: 22px; }
+    .hero__main { flex: 1; min-width: 0; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    h1 { font-size: clamp(2rem, 3vw, 2.8rem); line-height: 1.06; letter-spacing: -.03em; margin-bottom: 12px; font-weight: 800; color: var(--primary); }
+    .hero__text { max-width: 900px; color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
+    .hero__side { min-width: 320px; max-width: 380px; background: var(--surface); border: 1px solid rgba(255,255,255,.85); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 16px 18px; backdrop-filter: blur(12px); }
+    .meta-row { display: flex; gap: 10px; align-items: center; color: var(--text-muted); font-size: .92rem; }
+    .meta-row + .meta-row { margin-top: 10px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 4px rgba(5,150,105,.12); flex-shrink: 0; }
+
+    .card { background: var(--surface); border: 1px solid rgba(255,255,255,.86); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); backdrop-filter: blur(12px); overflow: hidden; min-width: 0; }
+    .card__head { padding: 22px 22px 0; }
+    .card__title { font-size: 1.08rem; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+    .card__desc { font-size: .93rem; color: var(--text-muted); line-height: 1.55; }
+
+    .stats { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 12px; padding: 18px 22px 0; }
+    .stat { background: #f8fafc; border: 1px solid #e8eef5; border-radius: 14px; padding: 14px; min-width: 0; }
+    .stat__label { font-size: .78rem; color: var(--text-muted); font-weight: 700; margin-bottom: 10px; }
+    .stat__value { font-size: 1.75rem; line-height: 1; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+    .stat__hint { color: var(--text-muted); font-size: .78rem; line-height: 1.45; }
+
+    .toolbar { display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap; padding: 18px 22px 0; }
+    .toolbar__left, .toolbar__right { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { border: 1px solid var(--border); background: #f8fafc; color: var(--text-muted); border-radius: 999px; padding: 8px 12px; font-size: .84rem; font-weight: 700; cursor: pointer; transition: all .15s ease; }
+    .chip.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 4px 10px rgba(15,23,42,.12); }
+
+    .control-inline { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .control-inline label { font-size: .82rem; font-weight: 700; color: var(--text-muted); }
+    .control-inline select { border: 1px solid var(--border); background: #fff; color: var(--text-main); border-radius: 10px; padding: 9px 11px; font: inherit; min-width: 170px; }
+
+    .btn { border: none; border-radius: 12px; padding: 11px 15px; font: inherit; font-weight: 700; cursor: pointer; transition: transform .15s ease, background .15s ease, border-color .15s ease, opacity .15s ease; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--primary); color: white; box-shadow: var(--shadow-sm); }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: white; color: var(--text-main); border: 1px solid var(--border); }
+
+    .table-wrap { padding: 14px 22px 22px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .desktop-table {
+      width: 100%; min-width: 1180px; border-collapse: collapse; table-layout: fixed; background: var(--surface-solid);
+      border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+    }
+    .desktop-table thead th {
+      background: #f8fafc; color: var(--text-muted); font-size: .76rem; text-transform: uppercase; letter-spacing: .04em;
+      text-align: left; padding: 13px 14px; border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    .desktop-table tbody td {
+      padding: 14px; border-bottom: 1px solid var(--border-soft); vertical-align: top; font-size: .87rem; line-height: 1.45;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .desktop-table tbody tr:hover { background: #fbfdff; }
+    .desktop-table tbody tr:last-child td { border-bottom: none; }
+
+    /* Columnas más estrechas y limpias */
+    .desktop-table tbody td:nth-child(1) { width: 86px; font-weight: 800; color: var(--primary); }
+    .desktop-table tbody td:nth-child(2) { width: 88px; }
+    .desktop-table tbody td:nth-child(3) { width: 105px; }
+    .desktop-table tbody td:nth-child(4) { width: 120px; }
+    .desktop-table tbody td:nth-child(5) { width: 280px; }
+    .desktop-table tbody td:nth-child(6) { width: 92px; }
+    .desktop-table tbody td:nth-child(7) { width: 95px; }
+    .desktop-table tbody td:nth-child(8) { width: 110px; }
+    .desktop-table tbody td:nth-child(9) { width: 130px; }
+    .desktop-table tbody td:nth-child(10) { width: 200px; }
+    .desktop-table tbody td:nth-child(11) { width: 200px; }
+    .desktop-table tbody td:nth-child(12) { width: 110px; text-align: center; }
+
+    .strong { font-weight: 700; color: var(--primary); }
+    .muted { color: var(--text-muted); font-size: .81rem; line-height: 1.45; }
+
+    .status-badge, .urgency-badge, .person-badge {
+      display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 6px 10px;
+      font-size: .76rem; font-weight: 800; white-space: nowrap;
+    }
+    .status--pendiente { background: #e2e8f0; color: #334155; }
+    .status--revision { background: #dbeafe; color: #1d4ed8; }
+    .status--standby { background: #fef3c7; color: #92400e; }
+    .status--resuelto { background: #d1fae5; color: #065f46; }
+
+    .urgency--alta { background: #fee2e2; color: #b91c1c; }
+    .urgency--media { background: #fef3c7; color: #b45309; }
+    .urgency--baja { background: #dbeafe; color: #1d4ed8; }
+    .person-badge { background: #eef2ff; color: #4338ca; }
+
+    .deadline-danger { color: #b91c1c; font-weight: 800; }
+    .row-alert { box-shadow: inset 4px 0 0 #dc2626; }
+    .row-warning { box-shadow: inset 4px 0 0 #d97706; }
+
+    /* === FILA EXPANDIBLE DEBAJO (acciones) === */
+    .expand-row {
+      display: none;
+      background: #f8fafc;
+    }
+    .expand-row.show {
+      display: table-row;
+    }
+    .expand-row td {
+      padding: 0 !important;
+      border-top: none;
+    }
+    .expand-content {
+      padding: 20px 24px;
+      border-top: 1px solid var(--border-soft);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .expand-content label {
+      font-size: .82rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;
+    }
+    .expand-content select, .expand-content textarea {
+      width: 100%; border: 1px solid var(--border); background: #fff; color: var(--text-main);
+      border-radius: 10px; padding: 10px 11px; font: inherit;
+    }
+    .expand-content textarea { min-height: 78px; resize: vertical; }
+    .expand-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .mobile-list { display: none; gap: 12px; }
+    .mobile-card {
+      background: white; border: 1px solid var(--border); border-radius: 16px; padding: 14px; box-shadow: var(--shadow-sm);
+    }
+    .mobile-card__head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; margin-bottom: 12px; }
+    .mobile-card__id { font-size: .95rem; font-weight: 800; color: var(--primary); }
+    .mobile-card__date { color: var(--text-muted); font-size: .82rem; margin-top: 4px; }
+    .mobile-card__grid { display: grid; gap: 8px; }
+    .mobile-row { display: grid; grid-template-columns: 108px 1fr; gap: 8px; align-items: start; }
+    .mobile-label { font-size: .82rem; font-weight: 700; color: var(--text-muted); }
+    .mobile-form { display: grid; gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-soft); }
+
+    .empty-state { border: 1px dashed var(--border); border-radius: 14px; padding: 24px 16px; text-align: center; color: var(--text-muted); background: #fcfdff; }
+
+    .notification {
+      position: fixed; right: 18px; bottom: 18px; z-index: 9999; min-width: 280px; max-width: 420px; padding: 14px 16px;
+      border-radius: 14px; box-shadow: 0 16px 40px rgba(15,23,42,.18); color: white;
+      background: linear-gradient(135deg, #0f172a, #334155); display: flex; align-items: center; gap: 10px;
+      opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity .2s ease, transform .2s ease;
+    }
+    .notification.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .notification.error { background: linear-gradient(135deg, #b91c1c, #dc2626); }
+
+    @media (max-width: 1280px) {
+      .page { padding: 24px 16px 34px; }
+      .hero { flex-direction: column; }
+      .hero__side { width: 100%; max-width: none; min-width: 0; }
+      .stats, .card__head, .toolbar, .table-wrap { padding-left: 18px; padding-right: 18px; }
+    }
+    @media (max-width: 980px) { .stats { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+    @media (max-width: 760px) {
+      .page { padding: 18px 12px 26px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .desktop-table { display: none; }
+      .mobile-list { display: grid; }
+      .notification { left: 14px; right: 14px; min-width: auto; }
+    }
+    @media (max-width: 560px) {
+      .stats { grid-template-columns: 1fr; }
+      .toolbar { align-items: stretch; }
+      .toolbar__right, .toolbar__left { width: 100%; }
+      .control-inline { width: 100%; }
+      .control-inline select { min-width: 0; width: 100%; }
+    }
+  </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div class="hero__main">
+          <div class="eyebrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.4"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20M2 12h20"></path> </svg> Dashboard de
+            Gerencia </div> 
+<div style="margin-bottom: 20px;">
+  <button type="button" class="btn btn-secondary" onclick="window.history.back();">
+    ← Volver al menú
+  </button>
+</div>          <h1>Gestión y resolución de solicitudes</h1>
+          <p class="hero__text"> Esta vista es exclusivamente para
+            gerencia. Aquí se priorizan solicitudes, se asigna una
+            persona responsable, se deja una decisión o instrucción y se
+            cambia el estado. No se crean solicitudes desde esta
+            pantalla. </p>
+        </div>
+        <aside class="hero__side">
+          <div class="meta-row"> <span class="dot"></span> <span><strong
+                style="color:var(--text-main);">Conectado</strong> a la
+              base de solicitudes</span> </div>
+          <div class="meta-row"> <span id="todayLabel"
+              style="font-weight:700; color:var(--text-main);">—</span>
+          </div>
+          <div class="meta-row"> <span><strong
+                style="color:var(--text-main);">Propósito:</strong>
+              asignar, decidir y cerrar</span> </div>
+        </aside>
+      </header>
+      <section class="card">
+        <div class="card__head">
+          <h2 class="card__title">Resumen de carga</h2>
+          <p class="card__desc"> Prioriza primero lo vencido, lo de alta
+            urgencia y lo que todavía no tiene responsable asignado. </p>
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat__label">Abiertas</div>
+            <div class="stat__value" id="statOpen">0</div>
+            <div class="stat__hint">Solicitudes activas</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">Vencidas</div>
+            <div class="stat__value" id="statOverdue">0</div>
+            <div class="stat__hint">Superaron fecha límite</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">Alta urgencia</div>
+            <div class="stat__value" id="statHigh">0</div>
+            <div class="stat__hint">Abiertas y críticas</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">En standby</div>
+            <div class="stat__value" id="statStandby">0</div>
+            <div class="stat__hint">Casos detenidos</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">Sin responsable</div>
+            <div class="stat__value" id="statNoOwner">0</div>
+            <div class="stat__hint">Pendientes de asignación</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">Resueltas semana</div>
+            <div class="stat__value" id="statClosedWeek">0</div>
+            <div class="stat__hint">Cierre reciente</div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <div class="toolbar__left">
+            <div class="chips"> <button class="chip" data-filter="all"
+                type="button">Todas</button> <button class="chip
+                active" data-filter="active" type="button">Abiertas</button>
+              <button class="chip" data-filter="overdue" type="button">Vencidas</button>
+              <button class="chip" data-filter="high" type="button">Alta
+                urgencia</button> <button class="chip"
+                data-filter="unassigned" type="button">Sin responsable</button>
+              <button class="chip" data-filter="standby" type="button">En
+                standby</button> <button class="chip"
+                data-filter="resolved" type="button">Resueltas</button>
+            </div>
+          </div>
+          <div class="toolbar__right">
+            <div class="control-inline"> <label for="ownerFilter">Responsable</label>
+              <select id="ownerFilter">
+                <option value="" selected="selected">Todos</option>
+              </select>
+            </div>
+            <button class="btn btn-secondary" id="btnRefresh"
+              type="button">Actualizar vista</button> </div>
+        </div>
+        <div class="table-wrap">
+          <table class="desktop-table">
+            <thead> <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Área</th>
+                <th>Solicitado por</th>
+                <th>Solicitud</th>
+                <th>Urgencia</th>
+                <th>Fecha límite</th>
+                <th>Estado</th>
+                <th>Responsable</th>
+                <th>Decisión gerencia</th>
+                <th>Comentario</th>
+                <th>Acción</th>
+              </tr>
+            </thead> <tbody id="requestsTableBody">
+              <tr>
+                <td colspan="12">
+                  <div class="empty-state">Cargando solicitudes...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+    <div class="notification" id="notification">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline> </svg> <span
+        id="notificationText">Mensaje</span> </div>
+    <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwNxGlH50jltL-YQeKz3XQmf48gz15pLZ7nzBOR9cWfv57JZRLMFuhD35b3CxSW2eccpA/exec';
+    const API_TOKEN = 'GERENCIA_2026';
+
+    const requestsTableBody = document.getElementById('requestsTableBody');
+    const requestsMobileBody = document.getElementById('requestsMobileBody');
+    const ownerFilter = document.getElementById('ownerFilter');
+    const chips = document.querySelectorAll('.chip');
+    const notification = document.getElementById('notification');
+    const notificationText = document.getElementById('notificationText');
+    const todayLabel = document.getElementById('todayLabel');
+
+    const statOpen = document.getElementById('statOpen');
+    const statOverdue = document.getElementById('statOverdue');
+    const statHigh = document.getElementById('statHigh');
+    const statStandby = document.getElementById('statStandby');
+    const statNoOwner = document.getElementById('statNoOwner');
+    const statClosedWeek = document.getElementById('statClosedWeek');
+
+    const ESTADOS = ['Pendiente', 'En revisión', 'En standby', 'Resuelto'];
+
+    let currentFilter = 'active';
+    let currentRows = [];
+    let responsibles = [];
+
+    function callApi(action, data = {}) {
+      return new Promise((resolve, reject) => {
+        const cbName = 'cb_' + Math.random().toString(36).slice(2);
+        const script = document.createElement('script');
+        const timeout = setTimeout(() => { cleanup(); reject(new Error('Tiempo de espera agotado')); }, 20000);
+
+        function cleanup() {
+          clearTimeout(timeout);
+          try { delete window[cbName]; } catch(_) {}
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[cbName] = function(response) { cleanup(); resolve(response); };
+
+        const params = new URLSearchParams({ token: API_TOKEN, action, callback: cbName, data: JSON.stringify(data || {}) });
+        script.src = `${API_URL}?${params.toString()}`;
+        script.onerror = () => { cleanup(); reject(new Error('No se pudo conectar')); };
+        document.body.appendChild(script);
+      });
+    }
+
+    function showNotification(message, type = 'success') {
+      notificationText.textContent = message;
+      notification.classList.toggle('error', type === 'error');
+      notification.classList.add('show');
+      clearTimeout(showNotification._timer);
+      showNotification._timer = setTimeout(() => notification.classList.remove('show'), 3200);
+    }
+
+    function formatToday() {
+      todayLabel.textContent = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function escapeHtml(text) {
+      return String(text ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function formatDate(value) {
+      if (!value) return '—';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return escapeHtml(value);
+      return date.toLocaleDateString('es-ES');
+    }
+
+    function normalizeRow(row) {
+      return {
+        id: row.id || '',
+        fechaSolicitud: row.fechaSolicitud || '',
+        area: row.area || '',
+        solicitadoPor: row.solicitadoPor || '',
+        decisionPendiente: row.decisionPendiente || '',
+        urgencia: row.urgencia || '',
+        fechaLimite: row.fechaLimite || '',
+        estado: row.estado || '',
+        responsableAsignado: row.responsableAsignado || '',
+        decisionGerencia: row.decisionGerencia || '',
+        comentarioGerencia: row.comentarioGerencia || '',
+        referencia: row.referencia || '',
+        activa: row.activa || 'No',
+        vencida: row.vencida || 'No',
+        closedThisWeek: row.closedThisWeek === true
+      };
+    }
+
+    function getStatusClass(status) {
+      const v = (status || '').toLowerCase();
+      if (v === 'pendiente') return 'status-badge status--pendiente';
+      if (v === 'en revisión') return 'status-badge status--revision';
+      if (v === 'en standby') return 'status-badge status--standby';
+      if (v === 'resuelto') return 'status-badge status--resuelto';
+      return 'status-badge status--pendiente';
+    }
+
+    function getUrgencyClass(urgency) {
+      const v = (urgency || '').toLowerCase();
+      if (v === 'alta') return 'urgency-badge urgency--alta';
+      if (v === 'media') return 'urgency-badge urgency--media';
+      if (v === 'baja') return 'urgency-badge urgency--baja';
+      return 'urgency-badge';
+    }
+
+    function getDeadlineClass(row) {
+      return row.vencida === 'Sí' ? 'deadline-danger' : '';
+    }
+
+    function getRowClass(row) {
+      if (row.vencida === 'Sí') return 'row-alert';
+      if (row.activa === 'Sí' && !row.responsableAsignado) return 'row-warning';
+      return '';
+    }
+
+    function fillOwnerFilter() {
+      ownerFilter.innerHTML = '<option value="">Todos</option>' + responsibles.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+    }
+
+    function buildResponsibleOptions(selected) {
+      let opts = ['<option value="">Sin asignar</option>'].concat(responsibles.map(name => `<option value="${escapeHtml(name)}" ${name === selected ? 'selected' : ''}>${escapeHtml(name)}</option>`));
+      if (selected && !responsibles.includes(selected)) opts.push(`<option value="${escapeHtml(selected)}" selected>${escapeHtml(selected)}</option>`);
+      return opts.join('');
+    }
+
+    function buildStateOptions(selected) {
+      return ESTADOS.map(state => `<option value="${state}" ${state === selected ? 'selected' : ''}>${state}</option>`).join('');
+    }
+
+    function applyFilters(rows) {
+      let filtered = rows.slice();
+      if (currentFilter === 'active') filtered = filtered.filter(r => r.activa === 'Sí');
+      else if (currentFilter === 'overdue') filtered = filtered.filter(r => r.vencida === 'Sí');
+      else if (currentFilter === 'high') filtered = filtered.filter(r => r.activa === 'Sí' && (r.urgencia || '').toLowerCase() === 'alta');
+      else if (currentFilter === 'unassigned') filtered = filtered.filter(r => r.activa === 'Sí' && !r.responsableAsignado);
+      else if (currentFilter === 'standby') filtered = filtered.filter(r => (r.estado || '').toLowerCase() === 'en standby');
+      else if (currentFilter === 'resolved') filtered = filtered.filter(r => (r.estado || '').toLowerCase() === 'resuelto');
+
+      const selectedOwner = ownerFilter.value.trim();
+      if (selectedOwner) filtered = filtered.filter(r => r.responsableAsignado === selectedOwner);
+      return filtered;
+    }
+
+    function updateStats(rows, dashboardData = null) {
+      const normalized = rows.map(normalizeRow);
+      statOpen.textContent = String(dashboardData?.abiertas ?? normalized.filter(r => r.activa === 'Sí').length);
+      statOverdue.textContent = String(dashboardData?.vencidas ?? normalized.filter(r => r.vencida === 'Sí').length);
+      statHigh.textContent = String(dashboardData?.urgenciaAltaAbiertas ?? normalized.filter(r => r.activa === 'Sí' && (r.urgencia || '').toLowerCase() === 'alta').length);
+      statStandby.textContent = String(dashboardData?.enStandby ?? normalized.filter(r => (r.estado || '').toLowerCase() === 'en standby').length);
+      statNoOwner.textContent = String(dashboardData?.sinResponsable ?? normalized.filter(r => r.activa === 'Sí' && !r.responsableAsignado).length);
+      statClosedWeek.textContent = String(dashboardData?.resueltasSemana ?? normalized.filter(r => r.closedThisWeek === true).length);
+    }
+
+    function renderRequests(rows) {
+      currentRows = Array.isArray(rows) ? rows.map(normalizeRow) : [];
+      const filtered = applyFilters(currentRows);
+
+      if (!filtered.length) {
+        requestsTableBody.innerHTML = `<tr><td colspan="12"><div class="empty-state">No hay solicitudes para el filtro seleccionado.</div></td></tr>`;
+        if (requestsMobileBody) requestsMobileBody.innerHTML = `<div class="empty-state">No hay solicitudes para el filtro seleccionado.</div>`;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach(row => {
+        html += `
+          <tr class="${getRowClass(row)}" data-id="${escapeHtml(row.id)}">
+            <td>${escapeHtml(row.id)}</td>
+            <td>${formatDate(row.fechaSolicitud)}</td>
+            <td>${escapeHtml(row.area)}</td>
+            <td>${escapeHtml(row.solicitadoPor)}</td>
+            <td><div class="strong">${escapeHtml(row.decisionPendiente)}</div>${row.referencia ? `<div class="muted" style="margin-top:5px;">Ref: ${escapeHtml(row.referencia)}</div>` : ''}</td>
+            <td><span class="${getUrgencyClass(row.urgencia)}">${escapeHtml(row.urgencia || '—')}</span></td>
+            <td class="${getDeadlineClass(row)}">${formatDate(row.fechaLimite)}</td>
+            <td><span class="${getStatusClass(row.estado)}">${escapeHtml(row.estado || '—')}</span></td>
+            <td>${row.responsableAsignado ? `<span class="person-badge">${escapeHtml(row.responsableAsignado)}</span>` : `<span class="muted">Sin asignar</span>`}</td>
+            <td>${row.decisionGerencia ? `<div class="strong">${escapeHtml(row.decisionGerencia)}</div>` : `<span class="muted">Sin decisión</span>`}</td>
+            <td>${row.comentarioGerencia ? escapeHtml(row.comentarioGerencia) : `<span class="muted">Sin comentario</span>`}</td>
+            <td><button class="btn btn-secondary js-toggle" data-id="${escapeHtml(row.id)}" style="font-size:0.82rem; padding:8px 14px;">Gestionar ▼</button></td>
+          </tr>
+
+          <!-- FILA EXPANDIBLE DEBAJO -->
+          <tr class="expand-row" data-id="${escapeHtml(row.id)}">
+            <td colspan="12">
+              <div class="expand-content">
+                <div>
+                  <label>Responsable</label>
+                  <select class="js-owner">${buildResponsibleOptions(row.responsableAsignado)}</select>
+                </div>
+                <div>
+                  <label>Estado</label>
+                  <select class="js-state">${buildStateOptions(row.estado || 'Pendiente')}</select>
+                </div>
+                <div style="grid-column:1/-1">
+                  <label>Decisión / Instrucción de gerencia</label>
+                  <textarea class="js-decision" placeholder="Escribe aquí la decisión o instrucción">${escapeHtml(row.decisionGerencia || '')}</textarea>
+                </div>
+                <div style="grid-column:1/-1">
+                  <label>Comentario adicional</label>
+                  <textarea class="js-comment" placeholder="Comentario para el solicitante">${escapeHtml(row.comentarioGerencia || '')}</textarea>
+                </div>
+                <div class="expand-actions">
+                  <button class="btn btn-primary js-save" data-id="${escapeHtml(row.id)}" style="min-width:160px;">Guardar cambios</button>
+                  <button class="btn btn-secondary js-cancel" style="min-width:120px;">Cancelar</button>
+                </div>
+              </div>
+            </td>
+          </tr>`;
+      });
+
+      requestsTableBody.innerHTML = html;
+      bindTableEvents();
+
+      // Mobile (ya tiene el formulario debajo)
+      if (requestsMobileBody) {
+        requestsMobileBody.innerHTML = filtered.map(row => `
+          <article class="mobile-card" data-id="${escapeHtml(row.id)}">
+            <div class="mobile-card__head">
+              <div><div class="mobile-card__id">${escapeHtml(row.id)}</div><div class="mobile-card__date">${formatDate(row.fechaSolicitud)}</div></div>
+              <span class="${getStatusClass(row.estado)}">${escapeHtml(row.estado || '—')}</span>
+            </div>
+            <div class="mobile-card__grid">
+              <div class="mobile-row"><div class="mobile-label">Área</div><div>${escapeHtml(row.area)}</div></div>
+              <div class="mobile-row"><div class="mobile-label">Solicitado por</div><div>${escapeHtml(row.solicitadoPor)}</div></div>
+              <div class="mobile-row"><div class="mobile-label">Solicitud</div><div>${escapeHtml(row.decisionPendiente)}</div></div>
+              <div class="mobile-row"><div class="mobile-label">Urgencia</div><div><span class="${getUrgencyClass(row.urgencia)}">${escapeHtml(row.urgencia || '—')}</span></div></div>
+              <div class="mobile-row"><div class="mobile-label">Fecha límite</div><div class="${getDeadlineClass(row)}">${formatDate(row.fechaLimite)}</div></div>
+              <div class="mobile-row"><div class="mobile-label">Responsable</div><div>${row.responsableAsignado ? `<span class="person-badge">${escapeHtml(row.responsableAsignado)}</span>` : `<span class="muted">Sin asignar</span>`}</div></div>
+            </div>
+            <div class="mobile-form">
+              <select class="js-owner">${buildResponsibleOptions(row.responsableAsignado)}</select>
+              <select class="js-state">${buildStateOptions(row.estado || 'Pendiente')}</select>
+              <textarea class="js-decision" placeholder="Instrucción o decisión">${escapeHtml(row.decisionGerencia || '')}</textarea>
+              <textarea class="js-comment" placeholder="Comentario adicional">${escapeHtml(row.comentarioGerencia || '')}</textarea>
+              <button class="btn btn-primary js-save" data-id="${escapeHtml(row.id)}">Guardar</button>
+            </div>
+          </article>
+        `).join('');
+        bindMobileEvents();
+      }
+    }
+
+    function bindTableEvents() {
+      // Toggle expandir
+      document.querySelectorAll('.js-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          const expandRow = document.querySelector(`.expand-row[data-id="${id}"]`);
+          if (expandRow) expandRow.classList.toggle('show');
+        });
+      });
+
+      // Guardar desde fila expandida
+      document.querySelectorAll('.js-save').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const id = btn.getAttribute('data-id');
+          const expandRow = btn.closest('.expand-row') || btn.closest('.mobile-card');
+          await saveRow(expandRow, id, btn);
+        });
+      });
+
+      // Cancelar (colapsar)
+      document.querySelectorAll('.js-cancel').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const row = btn.closest('.expand-row');
+          if (row) row.classList.remove('show');
+        });
+      });
+    }
+
+    function bindMobileEvents() {
+      document.querySelectorAll('.mobile-card .js-save').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const id = btn.getAttribute('data-id');
+          const card = btn.closest('.mobile-card');
+          await saveRow(card, id, btn);
+        });
+      });
+    }
+
+    async function saveRow(container, id, button) {
+      const owner = container.querySelector('.js-owner')?.value.trim() || '';
+      const state = container.querySelector('.js-state')?.value.trim() || 'Pendiente';
+      const decision = container.querySelector('.js-decision')?.value.trim() || '';
+      const comment = container.querySelector('.js-comment')?.value.trim() || '';
+
+      if (state !== 'Pendiente' && !owner) {
+        showNotification('Asigna un responsable antes de cambiar el estado.', 'error');
+        return;
+      }
+      if ((state === 'En revisión' || state === 'Resuelto') && !decision) {
+        showNotification('Escribe la decisión/instrucción.', 'error');
+        return;
+      }
+
+      const originalText = button.textContent;
+      button.disabled = true;
+      button.textContent = 'Guardando...';
+
+      try {
+        const payload = {
+          id, responsableAsignado: owner, estado: state,
+          decisionGerencia: decision, comentarioGerencia: comment,
+          usuario: 'Gerencia', comentarioLog: 'Actualización desde dashboard'
+        };
+        if (state !== 'Pendiente') payload.fechaDecision = new Date().toISOString().split('T')[0];
+        if (state === 'Resuelto') payload.fechaCierre = new Date().toISOString().split('T')[0];
+
+        const response = await callApi('actualizarSolicitud', payload);
+        if (!response?.success) throw new Error(response?.error || 'Error al guardar');
+
+        showNotification(`Solicitud ${id} guardada correctamente`);
+        await loadAll();
+      } catch (error) {
+        console.error(error);
+        showNotification(error.message || 'Error al guardar', 'error');
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    }
+
+    async function loadListas() {
+      const response = await callApi('getListas', {});
+      if (!response?.success) throw new Error(response?.error || 'Error listas');
+      const data = response.data || {};
+      responsibles = Array.isArray(data.Responsables) ? data.Responsables.filter(Boolean) : [];
+      fillOwnerFilter();
+    }
+
+    async function loadDashboardStats() {
+      const response = await callApi('getDashboardGerencia', {});
+      if (!response?.success) throw new Error(response?.error || 'Error dashboard');
+      return response.data || {};
+    }
+
+    async function loadSolicitudes() {
+      const response = await callApi('getSolicitudes', { soloActivas: false });
+      if (!response?.success) throw new Error(response?.error || 'Error solicitudes');
+      return response.data || [];
+    }
+
+    async function loadAll() {
+      try {
+        const [dashboardData, rows] = await Promise.all([loadDashboardStats(), loadSolicitudes()]);
+        updateStats(rows, dashboardData);
+        renderRequests(rows);
+      } catch (error) {
+        console.error(error);
+        updateStats([], null);
+        renderRequests([]);
+        showNotification(error.message || 'Error cargando datos', 'error');
+      }
+    }
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentFilter = chip.dataset.filter;
+        renderRequests(currentRows);
+      });
+    });
+
+    ownerFilter.addEventListener('change', () => renderRequests(currentRows));
+    document.getElementById('btnRefresh').addEventListener('click', async () => { await loadAll(); showNotification('Vista actualizada.'); });
+
+    async function init() {
+      formatToday();
+      try {
+        await loadListas();
+        await loadAll();
+      } catch (error) {
+        showNotification(error.message || 'Error inicial', 'error');
+      }
+    }
+
+    init();
+  </script>
+  </body>
+</html>
